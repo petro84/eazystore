@@ -4,6 +4,6 @@ import com.eazybytes.eazystore.dto.ContactRequestDto;
 
 public interface IContactService {
 
-    boolean saveContact(ContactRequestDto request);
+    void saveContact(ContactRequestDto request);
 
 }

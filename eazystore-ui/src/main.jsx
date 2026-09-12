@@ -20,7 +20,7 @@ import Home from "./components/Home.jsx";
 import ErrorPage from "./components/ErrorPage.jsx";
 import ProductDetail from "./components/ProductDetail.jsx";
 
-import { productsLoader } from "./api/products.js";
+import { productsLoader } from "./api/productsLoader.js";
 import { contactAction } from "./api/contactAction.js";
 
 const routeDefinitions = createRoutesFromElements(
