@@ -20,6 +20,7 @@ import Home from "./components/Home.jsx";
 import ErrorPage from "./components/ErrorPage.jsx";
 import ProductDetail from "./components/ProductDetail.jsx";
 
+import { CartProvider } from "./store/cart-provider.jsx";
 import { productsLoader } from "./api/productsLoader.js";
 import { contactAction } from "./api/contactAction.js";
 
@@ -39,7 +40,9 @@ const router = createBrowserRouter(routeDefinitions);
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <CartProvider>
+      <RouterProvider router={router} />
+    </CartProvider>
     <ToastContainer
       position="top-center"
       autoClose={3000}

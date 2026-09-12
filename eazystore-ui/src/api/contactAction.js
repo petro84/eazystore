@@ -13,8 +13,16 @@ export async function contactAction({ request }) {
     await apiClient.post("/contacts", contactData);
     return { success: true };
   } catch (err) {
-    throw new Response(err.message || "Failed to submit contact form.", {
-      status: 500,
-    });
+    if (err.response?.status === 400) {
+      return { success: false, errors: err.response?.data };
+    }
+    throw new Response(
+      err.response?.data.errorMessage ||
+        err.messge ||
+        "Failed to submit contact form.",
+      {
+        status: 500,
+      },
+    );
   }
 }

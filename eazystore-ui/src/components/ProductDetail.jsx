@@ -7,6 +7,8 @@ import {
   faShoppingBasket,
 } from "@fortawesome/free-solid-svg-icons";
 
+import { useCart } from "../store/cart-context";
+
 export default function ProductDetail() {
   const location = useLocation();
   const product = location.state?.product;
@@ -30,7 +32,14 @@ export default function ProductDetail() {
     setIsHovering(false);
     setBackgroundPos("center");
   };
+  
   const handleViewCart = () => navigate("/cart");
+  const { addToCart } = useCart();
+  const handleAddToCart = () => {
+    if (quantity < 1) return;
+
+    addToCart(product, quantity);
+  }
 
   return (
     <div className="min-h-213 flex items-center justify-center px-6 py-8 font-primary bg-normalbg dark:bg-darkbg">
@@ -89,7 +98,7 @@ export default function ProductDetail() {
                 className="w-16 px-2 py-1 border rounded-md focus:ring focus:ring-light dark:focus:ring-gray-600 dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
             </div>
-            <button className="w-full px-4 py-2 bg-primary dark:bg-light text-white dark:text-black rounded-md text-lg font-semibold hover:bg-dark dark:hover:bg-lighter transition">
+            <button onClick={handleAddToCart} className="w-full px-4 py-2 bg-primary dark:bg-light text-white dark:text-black rounded-md text-lg font-semibold hover:bg-dark dark:hover:bg-lighter transition">
               Add to Cart
               <FontAwesomeIcon icon={faShoppingCart} className="ml-2" />
             </button>
