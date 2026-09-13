@@ -1,8 +1,37 @@
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import {
+  Link,
+  Form,
+  useActionData,
+  useNavigation,
+  useNavigate,
+} from "react-router-dom";
+import { toast } from "react-toastify";
 
+import { useAuth } from "../store/auth-context";
 import PageTitle from "./PageTitle";
 
 export default function Login() {
+  const actionData = useActionData();
+  const navigation = useNavigation();
+  const navigate = useNavigate();
+
+  const isSubmitting = navigation.state === "submitting";
+
+  const { loginSuccess } = useAuth();
+  const from = sessionStorage.getItem("redirectPath") || "/home";
+
+  useEffect(() => {
+    if (actionData?.success) {
+      loginSuccess(actionData.jwtToken, actionData.user);
+      sessionStorage.removeItem("redirectPath");
+      navigate(from);
+    } else if (actionData?.errors) {
+      toast.error(actionData.errors.message || "Login failed");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [actionData]);
+
   const labelStyle =
     "block text-lg font-semibold text-primary dark:text-light mb-2";
   const textFieldStyle =
@@ -13,7 +42,7 @@ export default function Login() {
       <div className="bg-white dark:bg-gray-700 shadow-md rounded-lg max-w-md w-full px-8 py-6">
         <PageTitle title="Login" />
 
-        <form className="space-y-6">
+        <Form method="POST" className="space-y-6">
           <div>
             <label htmlFor="username" className={labelStyle}>
               Username
@@ -23,6 +52,7 @@ export default function Login() {
               type="text"
               name="username"
               placeholder="Your Username"
+              autoComplete="username"
               required
               className={textFieldStyle}
             />
@@ -36,8 +66,9 @@ export default function Login() {
               type="password"
               name="password"
               placeholder="Your Password"
+              autoComplete="current-password"
               required
-              minLength={8}
+              minLength={4}
               maxLength={20}
               className={textFieldStyle}
             />
@@ -45,12 +76,13 @@ export default function Login() {
           <div>
             <button
               type="submit"
+              disabled={isSubmitting}
               className="w-full px-6 py-2 text-white dark:text-black text-xl rounded-md transition duration-200 bg-primary dark:bg-light hover:bg-dark dark:hover:bg-lighter"
             >
-              Login
+              {isSubmitting ? "Authenticating..." : "Login"}
             </button>
           </div>
-        </form>
+        </Form>
         <p className="text-center text-gray-600 dark:text-gray-400 mt-4">
           Don't have an account?{" "}
           <Link

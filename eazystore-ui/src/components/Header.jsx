@@ -1,33 +1,61 @@
-import { useState, useEffect } from "react";
-import { Link, NavLink } from "react-router-dom";
-
+import { useState, useEffect, useRef } from "react";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faShoppingBasket,
   faTags,
   faSun,
   faMoon,
+  faAngleDown,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { useCart } from "../store/cart-context";
+import { useAuth } from "../store/auth-context";
 
 const Header = () => {
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem("theme") === "dark" ? "dark" : "light";
   });
+  const [isUserMenuOpen, setUserMenuOpen] = useState(false);
+  const [isAdminMenuOpen, setAdminMenuOpen] = useState(false);
 
+  const isAdmin = true;
+  const location = useLocation();
+  const userMenuRef = useRef();
+  const navigate = useNavigate();
+
+  const { isAuthenticated, logout } = useAuth();
   const { totalQuantity } = useCart();
 
+  const toggleAdminMenu = () => setAdminMenuOpen((prev) => !prev);
+  const toggleUserMenu = () => setUserMenuOpen((prev) => !prev);
+
   useEffect(() => {
+    const menuState = async () => {
+      setAdminMenuOpen(false);
+      setUserMenuOpen(false);
+    };
     if (theme === "dark") {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
-  }, [theme]);
+    menuState();
+
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        menuState();
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+  }, [theme, location.pathname]);
 
   const navLinkClass =
     "text-center text-lg font-primary font-semibold text-primary py-2 dark:text-light hover:text-dark dark:hover:text-lighter";
+
+  const dropdownLinkClass =
+    "block w-full text-left px-4 py-2 text-lg font-primary font-semibold text-primary dark:text-light hover:bg-gray-100 dark:hover:bg-gray-600";
 
   const toggleTheme = () => {
     setTheme((prevTheme) => {
@@ -35,6 +63,13 @@ const Header = () => {
       localStorage.setItem("theme", newTheme);
       return newTheme;
     });
+  };
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    logout();
+    toast.success("Logged out successfully");
+    navigate("/home");
   };
 
   return (
@@ -58,7 +93,7 @@ const Header = () => {
           <ul className="flex space-x-6">
             <li>
               <NavLink
-                to="/"
+                to="/home"
                 className={({ isActive }) =>
                   isActive ? `underline ${navLinkClass}` : navLinkClass
                 }
@@ -87,14 +122,85 @@ const Header = () => {
               </NavLink>
             </li>
             <li>
-              <NavLink
-                to="/login"
-                className={({ isActive }) =>
-                  isActive ? `underline ${navLinkClass}` : navLinkClass
-                }
-              >
-                Login
-              </NavLink>
+              {isAuthenticated ? (
+                <div className="relative">
+                  <button
+                    onClick={toggleUserMenu}
+                    className="relative text-primary dark:text-light"
+                  >
+                    <span className={navLinkClass}>Hello John Doe</span>
+                    <FontAwesomeIcon
+                      icon={faAngleDown}
+                      className="text-primary dark:text-light w-6 h-6"
+                    />
+                  </button>
+                  {isUserMenuOpen && (
+                    <div className="absolute right-0 w-48 bg-normalbg dark:bg-darkbg border border-gray-300 dark:border-gray-600 rounded-md shadow-lg z-20 transition ease-in-out duration-200">
+                      <ul className="py-2">
+                        <li>
+                          <Link to="/profile" className={dropdownLinkClass}>
+                            Profile
+                          </Link>
+                        </li>
+                        <li>
+                          <Link to="/orders" className={dropdownLinkClass}>
+                            Orders
+                          </Link>
+                        </li>
+                        {isAdmin && (
+                          <li>
+                            <button
+                              onClick={toggleAdminMenu}
+                              className={`${dropdownLinkClass} flex items-center justify-between`}
+                            >
+                              Admin
+                              <FontAwesomeIcon icon={faAngleDown} />
+                            </button>
+                            {isAdminMenuOpen && (
+                              <ul className="ml-4 mt-2 space-y-2">
+                                <li>
+                                  <Link
+                                    to="/admin/orders"
+                                    className={dropdownLinkClass}
+                                  >
+                                    Orders
+                                  </Link>
+                                </li>
+                                <li>
+                                  <Link
+                                    to="/admin/messages"
+                                    className={dropdownLinkClass}
+                                  >
+                                    Messages
+                                  </Link>
+                                </li>
+                              </ul>
+                            )}
+                          </li>
+                        )}
+                        <li>
+                          <Link
+                            to="/home"
+                            onClick={handleLogout}
+                            className={dropdownLinkClass}
+                          >
+                            Logout
+                          </Link>
+                        </li>
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <NavLink
+                  to="/login"
+                  className={({ isActive }) =>
+                    isActive ? `underline ${navLinkClass}` : navLinkClass
+                  }
+                >
+                  Login
+                </NavLink>
+              )}
             </li>
             <li>
               <Link to="/cart" className="relative text-primary py-2">
