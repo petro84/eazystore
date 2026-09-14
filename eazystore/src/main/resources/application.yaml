@@ -37,3 +37,5 @@ info:
     version: 1.0.0
     contact:
       email: larrypetroski@gmail.com
+stripe:
+  apiKey: ${STRIPE_API_KEY}

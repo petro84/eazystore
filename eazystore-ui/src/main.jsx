@@ -7,6 +7,8 @@ import {
   Route,
 } from "react-router-dom";
 import { ToastContainer, Bounce } from "react-toastify";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
 
 import "./index.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -26,6 +28,7 @@ import Profile from "./components/Profile.jsx";
 import Orders from "./components/Orders.jsx";
 import AdminOrders from "./components/admin/AdminOrders.jsx";
 import Messages from "./components/admin/Messages.jsx";
+import OrderSuccess from "./components/OrderSuccess.jsx";
 
 import { AuthProvider } from "./store/auth-provider.jsx";
 import { CartProvider } from "./store/cart-provider.jsx";
@@ -35,6 +38,10 @@ import { loginAction } from "./api/loginAction.js";
 import { registerAction } from "./api/registerAction.js";
 import { profileAction } from "./api/profileAction.js";
 import { profileLoader } from "./api/profileLoader.js";
+
+const stripePromise = loadStripe(
+  "pk_test_51UD2uMIVnAWT3GHp3B7w1VIwwlRLmYBeKhjPvSTBAXwausRhYh78YuzR2UWdlIPsQRjTMEOyDIy4tkfNcbNcknYv00Bk6BWeVJ",
+);
 
 const routeDefinitions = createRoutesFromElements(
   <Route path="/" element={<App />} errorElement={<ErrorPage />}>
@@ -48,6 +55,7 @@ const routeDefinitions = createRoutesFromElements(
     <Route path="/products/:productId" element={<ProductDetail />} />
     <Route element={<ProtectedRoute />}>
       <Route path="/checkout" element={<CheckoutForm />} />
+      <Route path="/order-success" element={<OrderSuccess />} />
       <Route
         path="/profile"
         element={<Profile />}
@@ -66,23 +74,25 @@ const router = createBrowserRouter(routeDefinitions);
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <AuthProvider>
-      <CartProvider>
-        <RouterProvider
-          router={router}
-          hydrateFallback={<p>Loading app...</p>}
-        />
-      </CartProvider>
-    </AuthProvider>
-    <ToastContainer
-      position="top-center"
-      autoClose={3000}
-      hideProgressBar={false}
-      newestOnTop={false}
-      draggable
-      pauseOnHover
-      theme={localStorage.getItem("theme") === "dark" ? "dark" : "light"}
-      transition={Bounce}
-    />
+    <Elements stripe={stripePromise}>
+      <AuthProvider>
+        <CartProvider>
+          <RouterProvider
+            router={router}
+            hydrateFallback={<p>Loading app...</p>}
+          />
+        </CartProvider>
+      </AuthProvider>
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        draggable
+        pauseOnHover
+        theme={localStorage.getItem("theme") === "dark" ? "dark" : "light"}
+        transition={Bounce}
+      />
+    </Elements>
   </StrictMode>,
 );

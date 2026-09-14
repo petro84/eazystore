@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 
+import { useAuth } from "../store/auth-context";
 import { useCart } from "../store/cart-context";
 import CartTable from "./CartTable";
 import PageTitle from "./PageTitle";
@@ -8,7 +9,17 @@ import emptyCartImage from "../assets/emptycart.png";
 
 export default function Cart() {
   const { cart } = useCart();
+  const { isAuthenticated, user } = useAuth();
+
   const isCartEmpty = useMemo(() => cart.length === 0, [cart.length]);
+
+  const isAddressInvalid = useMemo(() => {
+    if (!isAuthenticated) return false;
+    if (!user.address) return true;
+
+    const { street, city, state, postalCode, country } = user.address;
+    return !street || !city || !state || !postalCode || !country;
+  }, [user, isAuthenticated]);
 
   return (
     <div className="min-h-213 py-12 bg-normalbg dark:bg-darkbg font-primary">
@@ -16,6 +27,12 @@ export default function Cart() {
         <PageTitle title="Your Cart" />
         {!isCartEmpty ? (
           <>
+            {isAddressInvalid && (
+              <p className="text-red-500 text-lg mt-2 text-center">
+                Please update your address in your profile to proceed to
+                checkout.
+              </p>
+            )}
             <CartTable />
             <div className="flex justify-between mt-8 space-x-4">
               <Link
@@ -24,9 +41,17 @@ export default function Cart() {
               >
                 Back to Products
               </Link>
-              <button className="py-2 px-4 bg-primary dark:bg-light text-white dark:text-black text-xl font-semibold rounded-sm flex justify-center items-center hover:bg-dark dark:hover:bg-lighter transition">
+              <Link
+                to={isAddressInvalid ? "#" : "/checkout"}
+                className={`py-2 px-4 text-xl font-semibold rounded-sm flex justify-center items-center transition ${isAddressInvalid ? "bg-gray-400 cursor-not-allowed" : "bg-primary dark:bg-light hover:bg-dark dark:hover:bg-lighter"} text-white dark:text-black`}
+                onClick={(e) => {
+                  if (isAddressInvalid) {
+                    e.preventDefault();
+                  }
+                }}
+              >
                 Proceed to Checkout
-              </button>
+              </Link>
             </div>
           </>
         ) : (

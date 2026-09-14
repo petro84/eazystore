@@ -1,9 +1,6 @@
 package com.eazybytes.eazystore.controller;
 
-import com.eazybytes.eazystore.dto.LoginRequestDto;
-import com.eazybytes.eazystore.dto.LoginResponseDto;
-import com.eazybytes.eazystore.dto.RegisterRequestDto;
-import com.eazybytes.eazystore.dto.UserDto;
+import com.eazybytes.eazystore.dto.*;
 import com.eazybytes.eazystore.entity.Customer;
 import com.eazybytes.eazystore.entity.Role;
 import com.eazybytes.eazystore.repository.CustomerRepository;
@@ -20,6 +17,7 @@ import org.springframework.security.authentication.password.CompromisedPasswordC
 import org.springframework.security.authentication.password.CompromisedPasswordDecision;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -53,6 +52,13 @@ public class AuthController {
             UserDto userDto = new UserDto();
             assert loggedInUser != null;
             BeanUtils.copyProperties(loggedInUser, userDto);
+            userDto.setRoles(auth.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority).collect(Collectors.joining(",")));
+            if (loggedInUser.getAddress() != null) {
+                AddressDto addressDto = new AddressDto();
+                BeanUtils.copyProperties(loggedInUser.getAddress(), addressDto);
+                userDto.setAddress(addressDto);
+            }
 
             return ResponseEntity.status(HttpStatus.OK).body(new LoginResponseDto(HttpStatus.OK.getReasonPhrase(), userDto, jwtToken));
         } catch (BadCredentialsException e) {
