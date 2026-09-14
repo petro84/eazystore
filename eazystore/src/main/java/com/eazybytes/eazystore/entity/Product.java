@@ -3,10 +3,8 @@ package com.eazybytes.eazystore.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 
 @Getter
 @Setter
@@ -32,5 +30,4 @@ public class Product extends BaseEntity {
 
     @Column(name = "image_url", length = 500)
     private String imageUrl;
-
 }

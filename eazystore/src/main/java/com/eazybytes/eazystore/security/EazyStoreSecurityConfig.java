@@ -7,18 +7,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
-import org.springframework.security.authentication.password.CompromisedPasswordDecision;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.password.HaveIBeenPwnedRestApiPasswordChecker;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -44,7 +38,8 @@ public class EazyStoreSecurityConfig {
                 .cors(corsConfig -> corsConfig.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests((requests) -> {
                     publicPaths.forEach(path -> requests.requestMatchers(path).permitAll());
-                    requests.anyRequest().authenticated();
+                    requests.requestMatchers("/api/v1/admin/**").hasRole("ADMIN");
+                    requests.anyRequest().hasAnyRole("USER", "ADMIN");
                 })
                 .addFilterBefore(new JWTTokenValidatorFilter(publicPaths), BasicAuthenticationFilter.class)
                 .formLogin(withDefaults())

@@ -5,6 +5,7 @@ import com.eazybytes.eazystore.dto.LoginResponseDto;
 import com.eazybytes.eazystore.dto.RegisterRequestDto;
 import com.eazybytes.eazystore.dto.UserDto;
 import com.eazybytes.eazystore.entity.Customer;
+import com.eazybytes.eazystore.entity.Role;
 import com.eazybytes.eazystore.repository.CustomerRepository;
 import com.eazybytes.eazystore.util.JwtUtil;
 import jakarta.validation.Valid;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -88,6 +90,9 @@ public class AuthController {
         Customer customer = new Customer();
         BeanUtils.copyProperties(registerRequestDto, customer);
         customer.setPasswordHash(passwordEncoder.encode(registerRequestDto.getPassword()));
+        Role role = new Role();
+        role.setName("ROLE_USER");
+        customer.setRoles(Set.of(role));
         customerRepo.save(customer);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Registration successful");
