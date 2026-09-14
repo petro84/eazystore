@@ -17,10 +17,8 @@ public class ContactServiceImpl implements IContactService {
 
     @Override
     public void saveContact(ContactRequestDto request) {
-
-            Contact contact = transformToEntity(request);
-            contactRepo.save(contact);
-
+        Contact contact = transformToEntity(request);
+        contactRepo.save(contact);
     }
 
     private Contact transformToEntity(ContactRequestDto request) {

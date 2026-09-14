@@ -33,6 +33,8 @@ import { productsLoader } from "./api/productsLoader.js";
 import { contactAction } from "./api/contactAction.js";
 import { loginAction } from "./api/loginAction.js";
 import { registerAction } from "./api/registerAction.js";
+import { profileAction } from "./api/profileAction.js";
+import { profileLoader } from "./api/profileLoader.js";
 
 const routeDefinitions = createRoutesFromElements(
   <Route path="/" element={<App />} errorElement={<ErrorPage />}>
@@ -46,7 +48,13 @@ const routeDefinitions = createRoutesFromElements(
     <Route path="/products/:productId" element={<ProductDetail />} />
     <Route element={<ProtectedRoute />}>
       <Route path="/checkout" element={<CheckoutForm />} />
-      <Route path="/profile" element={<Profile />} />
+      <Route
+        path="/profile"
+        element={<Profile />}
+        action={profileAction}
+        loader={profileLoader}
+        shouldRevalidate={({ actionResult }) => !actionResult.success}
+      />
       <Route path="/orders" element={<Orders />} />
       <Route path="/admin/orders" element={<AdminOrders />} />
       <Route path="/admin/messages" element={<Messages />} />

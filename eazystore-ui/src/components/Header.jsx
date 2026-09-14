@@ -25,7 +25,7 @@ const Header = () => {
   const userMenuRef = useRef();
   const navigate = useNavigate();
 
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
   const { totalQuantity } = useCart();
 
   const toggleAdminMenu = () => setAdminMenuOpen((prev) => !prev);
@@ -123,12 +123,12 @@ const Header = () => {
             </li>
             <li>
               {isAuthenticated ? (
-                <div className="relative">
+                <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={toggleUserMenu}
                     className="relative text-primary dark:text-light"
                   >
-                    <span className={navLinkClass}>Hello John Doe</span>
+                    <span className={navLinkClass}>{`Hello ${user.name.length > 5 ? `${user.name.slice(0,5)}...` : user.name}`}</span>
                     <FontAwesomeIcon
                       icon={faAngleDown}
                       className="text-primary dark:text-light w-6 h-6"

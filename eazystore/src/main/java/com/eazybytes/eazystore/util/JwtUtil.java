@@ -1,6 +1,7 @@
 package com.eazybytes.eazystore.util;
 
 import com.eazybytes.eazystore.constants.ApplicationConstants;
+import com.eazybytes.eazystore.entity.Customer;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +27,11 @@ public class JwtUtil {
         String secret = env.getProperty(ApplicationConstants.JWT_SECRET_KEY, ApplicationConstants.JWT_SECRET_DEFAULT_VALUE);
 
         SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-        User fetchedUser = (User) authentication.getPrincipal();
+        Customer fetchedUser = (Customer) authentication.getPrincipal();
         jwt = Jwts.builder().issuer("Eazy Bank").subject("JWT Token")
-                .claim("username", Objects.requireNonNull(fetchedUser).getUsername())
+                .claim("username", Objects.requireNonNull(fetchedUser).getName())
+                .claim("email", Objects.requireNonNull(fetchedUser).getEmail())
+                .claim("mobileNumber", Objects.requireNonNull(fetchedUser).getMobileNumber())
                 .issuedAt(new Date())
                 .expiration(new Date(new Date().getTime() + 60 * 60 * 1000))
                 .signWith(secretKey).compact();
