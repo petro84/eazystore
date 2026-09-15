@@ -60,13 +60,21 @@ CREATE TABLE IF NOT EXISTS address
 CREATE TABLE IF NOT EXISTS roles
 (
     role_id     BIGINT AUTO_INCREMENT PRIMARY KEY,
-    customer_id BIGINT NOT NULL,
     name        VARCHAR(50) NOT NULL,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     created_by  VARCHAR(20)                         NOT NULL,
     updated_at  TIMESTAMP DEFAULT NULL,
     updated_by  VARCHAR(20) DEFAULT NULL,
-    FOREIGN KEY (customer_id) REFERENCES customers(customer_id) ON DELETE CASCADE
+    UNIQUE KEY unique_name (name)
+);
+
+CREATE TABLE IF NOT EXISTS customer_roles
+(
+    customer_id BIGINT NOT NULL,
+    role_id     BIGINT NOT NULL,
+    PRIMARY KEY (customer_id, role_id),
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES roles(role_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS orders
