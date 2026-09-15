@@ -14,19 +14,19 @@ import { useCart } from "../store/cart-context";
 import { useAuth } from "../store/auth-context";
 
 const Header = () => {
+  const { isAuthenticated, logout, user } = useAuth();
+  const { totalQuantity } = useCart();
+
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem("theme") === "dark" ? "dark" : "light";
   });
   const [isUserMenuOpen, setUserMenuOpen] = useState(false);
   const [isAdminMenuOpen, setAdminMenuOpen] = useState(false);
 
-  const isAdmin = true;
+  const isAdmin = user?.roles?.includes("ROLE_ADMIN");
   const location = useLocation();
   const userMenuRef = useRef();
   const navigate = useNavigate();
-
-  const { isAuthenticated, logout, user } = useAuth();
-  const { totalQuantity } = useCart();
 
   const toggleAdminMenu = () => setAdminMenuOpen((prev) => !prev);
   const toggleUserMenu = () => setUserMenuOpen((prev) => !prev);

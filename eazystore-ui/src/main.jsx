@@ -38,6 +38,9 @@ import { loginAction } from "./api/loginAction.js";
 import { registerAction } from "./api/registerAction.js";
 import { profileAction } from "./api/profileAction.js";
 import { profileLoader } from "./api/profileLoader.js";
+import { adminOrdersLoader } from "./api/adminOrdersLoader.js";
+import { messagesLoader } from "./api/messagesLoader.js";
+import { ordersLoader } from "./api/ordersLoader.js";
 
 const stripePromise = loadStripe(
   "pk_test_51UD2uMIVnAWT3GHp3B7w1VIwwlRLmYBeKhjPvSTBAXwausRhYh78YuzR2UWdlIPsQRjTMEOyDIy4tkfNcbNcknYv00Bk6BWeVJ",
@@ -63,9 +66,9 @@ const routeDefinitions = createRoutesFromElements(
         loader={profileLoader}
         shouldRevalidate={({ actionResult }) => !actionResult.success}
       />
-      <Route path="/orders" element={<Orders />} />
-      <Route path="/admin/orders" element={<AdminOrders />} />
-      <Route path="/admin/messages" element={<Messages />} />
+      <Route path="/orders" element={<Orders />} loader={ordersLoader} />
+      <Route path="/admin/orders" element={<AdminOrders />} loader={adminOrdersLoader} />
+      <Route path="/admin/messages" element={<Messages />} loader={messagesLoader} />
     </Route>
   </Route>,
 );

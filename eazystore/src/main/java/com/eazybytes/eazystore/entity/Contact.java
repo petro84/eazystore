@@ -26,4 +26,6 @@ public class Contact extends BaseEntity {
     @Column(name = "message", nullable = false, length = 500)
     private String message;
 
+    @Column(name = "status", nullable = false, length = 50)
+    private String status;
 }
