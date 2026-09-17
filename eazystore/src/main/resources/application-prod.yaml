@@ -1,0 +1,14 @@
+logging:
+  level:
+    root: ${LOG_LEVEL:ERROR}
+  file:
+    name: ${LOG_FILENAME:/Users/larrypetroski/Project/Coding/Full Stack/react/logs/app-prod.log}
+spring:
+  jpa:
+    show-sql: ${JPA_SHOW_URL:false}
+    properties:
+      hibernate:
+        format_sql: ${HIBERNATE_FORMAT_SQL:false}
+contact:
+  phone: 1234567895
+  email: admin@test.com

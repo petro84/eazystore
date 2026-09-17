@@ -1,0 +1,14 @@
+logging:
+  level:
+    root: ${LOG_LEVEL:WARN}
+  file:
+    name: ${LOG_FILENAME:/Users/larrypetroski/Project/Coding/Full Stack/react/logs/app-qa.log}
+spring:
+  jpa:
+    show-sql: ${JPA_SHOW_URL:false}
+    properties:
+      hibernate:
+        format_sql: ${HIBERNATE_FORMAT_SQL:false}
+contact:
+  phone: 1234567891
+  email: tester@test.com

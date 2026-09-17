@@ -41,6 +41,7 @@ import { profileLoader } from "./api/profileLoader.js";
 import { adminOrdersLoader } from "./api/adminOrdersLoader.js";
 import { messagesLoader } from "./api/messagesLoader.js";
 import { ordersLoader } from "./api/ordersLoader.js";
+import { contactLoader } from "./api/contactLoader.js";
 
 const stripePromise = loadStripe(
   "pk_test_51UD2uMIVnAWT3GHp3B7w1VIwwlRLmYBeKhjPvSTBAXwausRhYh78YuzR2UWdlIPsQRjTMEOyDIy4tkfNcbNcknYv00Bk6BWeVJ",
@@ -51,7 +52,7 @@ const routeDefinitions = createRoutesFromElements(
     <Route index element={<Home />} loader={productsLoader} />
     <Route path="/home" element={<Home />} loader={productsLoader} />
     <Route path="/about" element={<About />} />
-    <Route path="contact" element={<Contact />} action={contactAction} />
+    <Route path="contact" element={<Contact />} action={contactAction} loader={contactLoader} />
     <Route path="/login" element={<Login />} action={loginAction} />
     <Route path="/register" element={<Register />} action={registerAction} />
     <Route path="/cart" element={<Cart />} />
