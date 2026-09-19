@@ -1,15 +1,17 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
-import { useAuth } from "../store/auth-context";
-import { useCart } from "../store/cart-context";
+import { selectIsAuthenticated, selectUser } from "../store/auth-slice";
+import { selectCartItems } from "../store/cart-slice";
 import CartTable from "./CartTable";
 import PageTitle from "./PageTitle";
 import emptyCartImage from "../assets/emptycart.png";
 
 export default function Cart() {
-  const { cart } = useCart();
-  const { isAuthenticated, user } = useAuth();
+  const cart = useSelector(selectCartItems);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const user = useSelector(selectUser);
 
   const isCartEmpty = useMemo(() => cart.length === 0, [cart.length]);
 

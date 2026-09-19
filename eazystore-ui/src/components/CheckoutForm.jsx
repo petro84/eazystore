@@ -8,15 +8,23 @@ import {
   CardExpiryElement,
   CardCvcElement,
 } from "@stripe/react-stripe-js";
+import { useSelector, useDispatch } from "react-redux";
+
+import {
+  selectCartItems,
+  selectTotalPrice,
+  clearCart,
+} from "../store/cart-slice";
 
 import apiClient from "../api/apiClient";
-import { useAuth } from "../store/auth-context";
-import { useCart } from "../store/cart-context";
+import { selectUser } from "../store/auth-slice";
 import PageTitle from "./PageTitle";
 
 export default function CheckoutForm() {
-  const { user } = useAuth();
-  const { cart, totalPrice, clearCart } = useCart();
+  const dispatch = useDispatch();
+  const user = useSelector(selectUser);
+  const cart = useSelector(selectCartItems);
+  const totalPrice = useSelector(selectTotalPrice);
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
@@ -122,7 +130,7 @@ export default function CheckoutForm() {
           });
 
           sessionStorage.setItem("skipRedirectPath", "true");
-          clearCart();
+          dispatch(clearCart());
           navigate("/order-success");
         } catch (orderError) {
           console.error("Failed to create order: ", orderError);

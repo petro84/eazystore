@@ -7,17 +7,18 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
 
 import PageTitle from "./PageTitle";
-import { useAuth } from "../store/auth-context";
+import { loginSuccess, logout } from "../store/auth-slice";
 
 export default function Profile() {
+  const dispatch = useDispatch();
   const initialProfileData = useLoaderData();
   const actionData = useActionData();
   const navigation = useNavigation();
   const navigate = useNavigate();
   const isSubmitting = navigation.state === "submitting";
-  const { logout } = useAuth();
 
   const [profileData, setProfileData] = useState(initialProfileData);
 
@@ -25,13 +26,21 @@ export default function Profile() {
     if (actionData?.success) {
       if (actionData?.profileData?.emailUpdated) {
         sessionStorage.setItem("skipRedirectPath", "true");
-        logout();
+        dispatch(logout());
         toast.success(
           "Logged out successfully! Login again with updated email.",
         );
         navigate("/login");
       } else {
         toast.success("Your profile details are saved successfully!");
+        
+        if (actionData.profileData) {
+          const updatedUser = {
+            ...profileData,
+            ...actionData.profileData
+          };
+          dispatch(loginSuccess({jwtToken: localStorage.getItem("jwtToken"), user: updatedUser}))
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -47,7 +56,12 @@ export default function Profile() {
   return (
     <div className="max-w-6xl min-h-213 mx-auto px-6 py-8 font-primary bg-normalbg dark:bg-darkbg">
       <PageTitle title="My Profile" />
-      <Form method="PUT" key={actionData} action="/profile" className="space-y-6 max-w-3xl mx-auto">
+      <Form
+        method="PUT"
+        key={actionData}
+        action="/profile"
+        className="space-y-6 max-w-3xl mx-auto"
+      >
         <div>
           <h2 className={h2Style}>Personal Details</h2>
           <label className={labelStyle} htmlFor="name">

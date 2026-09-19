@@ -9,13 +9,16 @@ import {
   faMoon,
   faAngleDown,
 } from "@fortawesome/free-solid-svg-icons";
+import { useSelector, useDispatch } from "react-redux";
 
-import { useCart } from "../store/cart-context";
-import { useAuth } from "../store/auth-context";
+import { selectUser, selectIsAuthenticated, logout } from "../store/auth-slice";
+import { selectTotalQuantity } from "../store/cart-slice";
 
 const Header = () => {
-  const { isAuthenticated, logout, user } = useAuth();
-  const { totalQuantity } = useCart();
+  const dispatch = useDispatch();
+  const totalQuantity = useSelector(selectTotalQuantity);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const user = useSelector(selectUser);
 
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem("theme") === "dark" ? "dark" : "light";
@@ -67,7 +70,7 @@ const Header = () => {
 
   const handleLogout = (e) => {
     e.preventDefault();
-    logout();
+    dispatch(logout());
     toast.success("Logged out successfully");
     navigate("/home");
   };
@@ -128,7 +131,9 @@ const Header = () => {
                     onClick={toggleUserMenu}
                     className="relative text-primary dark:text-light"
                   >
-                    <span className={navLinkClass}>{`Hello ${user.name.length > 5 ? `${user.name.slice(0,5)}...` : user.name}`}</span>
+                    <span
+                      className={navLinkClass}
+                    >{`Hello ${user.name.length > 5 ? `${user.name.slice(0, 5)}...` : user.name}`}</span>
                     <FontAwesomeIcon
                       icon={faAngleDown}
                       className="text-primary dark:text-light w-6 h-6"

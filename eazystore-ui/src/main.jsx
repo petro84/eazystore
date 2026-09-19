@@ -9,6 +9,7 @@ import {
 import { ToastContainer, Bounce } from "react-toastify";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
+import { Provider } from "react-redux";
 
 import "./index.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -30,8 +31,6 @@ import AdminOrders from "./components/admin/AdminOrders.jsx";
 import Messages from "./components/admin/Messages.jsx";
 import OrderSuccess from "./components/OrderSuccess.jsx";
 
-import { AuthProvider } from "./store/auth-provider.jsx";
-import { CartProvider } from "./store/cart-provider.jsx";
 import { productsLoader } from "./api/productsLoader.js";
 import { contactAction } from "./api/contactAction.js";
 import { loginAction } from "./api/loginAction.js";
@@ -42,6 +41,7 @@ import { adminOrdersLoader } from "./api/adminOrdersLoader.js";
 import { messagesLoader } from "./api/messagesLoader.js";
 import { ordersLoader } from "./api/ordersLoader.js";
 import { contactLoader } from "./api/contactLoader.js";
+import store from "./store/store.js";
 
 const stripePromise = loadStripe(
   "pk_test_51UD2uMIVnAWT3GHp3B7w1VIwwlRLmYBeKhjPvSTBAXwausRhYh78YuzR2UWdlIPsQRjTMEOyDIy4tkfNcbNcknYv00Bk6BWeVJ",
@@ -52,7 +52,12 @@ const routeDefinitions = createRoutesFromElements(
     <Route index element={<Home />} loader={productsLoader} />
     <Route path="/home" element={<Home />} loader={productsLoader} />
     <Route path="/about" element={<About />} />
-    <Route path="contact" element={<Contact />} action={contactAction} loader={contactLoader} />
+    <Route
+      path="contact"
+      element={<Contact />}
+      action={contactAction}
+      loader={contactLoader}
+    />
     <Route path="/login" element={<Login />} action={loginAction} />
     <Route path="/register" element={<Register />} action={registerAction} />
     <Route path="/cart" element={<Cart />} />
@@ -68,8 +73,16 @@ const routeDefinitions = createRoutesFromElements(
         shouldRevalidate={({ actionResult }) => !actionResult.success}
       />
       <Route path="/orders" element={<Orders />} loader={ordersLoader} />
-      <Route path="/admin/orders" element={<AdminOrders />} loader={adminOrdersLoader} />
-      <Route path="/admin/messages" element={<Messages />} loader={messagesLoader} />
+      <Route
+        path="/admin/orders"
+        element={<AdminOrders />}
+        loader={adminOrdersLoader}
+      />
+      <Route
+        path="/admin/messages"
+        element={<Messages />}
+        loader={messagesLoader}
+      />
     </Route>
   </Route>,
 );
@@ -79,14 +92,12 @@ const router = createBrowserRouter(routeDefinitions);
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Elements stripe={stripePromise}>
-      <AuthProvider>
-        <CartProvider>
-          <RouterProvider
-            router={router}
-            hydrateFallback={<p>Loading app...</p>}
-          />
-        </CartProvider>
-      </AuthProvider>
+      <Provider store={store}>
+        <RouterProvider
+          router={router}
+          hydrateFallback={<p>Loading app...</p>}
+        />
+      </Provider>
       <ToastContainer
         position="top-center"
         autoClose={3000}

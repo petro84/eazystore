@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useEffect } from "react";
 import {
   Link,
@@ -8,23 +8,26 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
 
-import { useAuth } from "../store/auth-context";
+import { loginSuccess } from "../store/auth-slice";
 import PageTitle from "./PageTitle";
 
 export default function Login() {
+  const dispatch = useDispatch();
   const actionData = useActionData();
   const navigation = useNavigation();
   const navigate = useNavigate();
 
   const isSubmitting = navigation.state === "submitting";
 
-  const { loginSuccess } = useAuth();
   const from = sessionStorage.getItem("redirectPath") || "/home";
 
   useEffect(() => {
     if (actionData?.success) {
-      loginSuccess(actionData.jwtToken, actionData.user);
+      dispatch(
+        loginSuccess({ jwtToken: actionData.jwtToken, user: actionData.user }),
+      );
       sessionStorage.removeItem("redirectPath");
       setTimeout(() => navigate(from), 100);
     } else if (actionData?.errors) {
